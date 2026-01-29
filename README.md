@@ -20,7 +20,7 @@ The application follows a microservices-inspired architecture where the RAG pipe
 
 ```mermaid
 graph TD
-    User[User (Browser)] -->|Natural Language Query| Streamlit[Streamlit UI]
+    User[User Browser] -->|Natural Language Query| Streamlit[Streamlit UI]
     
     subgraph "RAG Pipeline (LangChain)"
         Streamlit -->|Query| Chain[LangChain Orchestrator]
@@ -308,6 +308,7 @@ Now u can see metrics related to your kubernetes cluster..
 ---Make sure to do cleanup 
 
 ```
+
 
 
 
