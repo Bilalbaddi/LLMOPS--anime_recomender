@@ -17,13 +17,12 @@ Unlike simple filtering apps, this project leverages **LLMs (Groq/HuggingFace)**
 
 The application follows a microservices-inspired architecture deployed on AWS EC2.
 
-```mermaid
 graph TD
-    User[User (Browser)] -->|HTTP Request| EC2[AWS EC2 Instance]
-    EC2 -->|Port Forward :8501| K8s[Kubernetes Cluster (Minikube)]
-    
+    User["User (Browser)"] -->|HTTP Request| EC2["AWS EC2 Instance"]
+    EC2 -->|Port Forward :8501| Service
+
     subgraph "Kubernetes Cluster"
-        Service[Service (Load Balancer)] -->|Route Traffic| Pod[App Pod]
+        Service["Service (Load Balancer)"] -->|Route Traffic| Pod[App Pod]
         
         subgraph "Anime Recommender Pod"
             Container[Streamlit Container]
@@ -34,7 +33,7 @@ graph TD
         end
     end
     
-    Pod -->|API Call| LLM[External LLM API (Groq/HF)]
+    Pod -->|API Call| LLM["External LLM API (Groq/HF)"]
     Agent -->|Push Metrics| Grafana[Grafana Cloud Dashboard]
 
 LLMOPS--anime_recomender/
@@ -44,3 +43,4 @@ LLMOPS--anime_recomender/
 ├── app.py                  # Main Streamlit application entry point
 ├── README.md               # Project documentation
 └── ...
+
