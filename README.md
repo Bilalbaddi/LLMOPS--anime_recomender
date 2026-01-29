@@ -20,23 +20,23 @@ The application follows a microservices-inspired architecture where the RAG pipe
 
 ```mermaid
 graph TD
-    User[User Browser] -->|Natural Language Query| Streamlit[Streamlit UI]
+    User["User (Browser)"] -->|Natural Language Query| Streamlit["Streamlit UI"]
     
     subgraph "RAG Pipeline (LangChain)"
-        Streamlit -->|Query| Chain[LangChain Orchestrator]
-        Chain -->|Search Context| Ret[Retriever]
-        Ret -->|Retrieve Data| Vector[Vector Store]
+        Streamlit -->|Query| Chain["LangChain Orchestrator"]
+        Chain -->|Search Context| Ret["Retriever"]
+        Ret -->|Retrieve Data| Vector["Vector Store"]
         Vector -->|Augmented Context| Chain
-        Chain -->|Prompt + Context| LLM[Groq API (Llama3/Mixtral)]
+        Chain -->|Prompt + Context| LLM["Groq API (Llama3/Mixtral)"]
     end
     
     subgraph "Infrastructure"
-        K8s[Kubernetes Cluster] -->|Hosts| Pod[App Pod]
-        Agent[Grafana Agent] -->|Monitors| Pod
+        K8s["Kubernetes Cluster"] -->|Hosts| Pod["App Pod"]
+        Agent["Grafana Agent"] -->|Monitors| Pod
     end
 
     Chain -->|Final Answer| User
-    LLM -->|Inference| HuggingFace[Hugging Face Models]
+    LLM -->|Inference| HuggingFace["Hugging Face Models"]
 
     
 
@@ -308,6 +308,7 @@ Now u can see metrics related to your kubernetes cluster..
 ---Make sure to do cleanup 
 
 ```
+
 
 
 
