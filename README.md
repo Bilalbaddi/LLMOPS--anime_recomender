@@ -20,11 +20,14 @@ The application follows a microservices-inspired architecture where the RAG pipe
 
 ```mermaid
 graph TD
-    Step1["1. Log in to **AWS Console**"] --> Step2["2. Search for **EC2**"]
-    Step2 --> Step3["3. Click **'Launch Instance'**"]
-    Step3 --> Step4["4. Select **Ubuntu** Image"]
-    Step4 --> Step5["5. Create Key Pair"]
-    Step5 --> Step6["6. Click **'Launch Instance'**"]
+    User["User (Browser)"] -->|Natural Language Query| Streamlit["Streamlit UI"]
+    
+    subgraph "RAG Pipeline"
+        Streamlit -->|Query| Chain["LangChain Orchestrator"]
+        Chain -->|Search Context| Ret["Retriever"]
+        Ret -->|Retrieve Data| Vector["Vector Store"]
+        Vector -->|Augmented Context| Chain
+        Chain -->|Prompt + Context| LLM["Groq API (Llama3)"]
     end
     
     subgraph "Infrastructure"
@@ -34,7 +37,6 @@ graph TD
 
     Chain -->|Final Answer| User
     LLM -->|Inference| HuggingFace["Hugging Face Models"]
-
     
 
 LLMOPS--anime_recomender/
@@ -305,6 +307,7 @@ Now u can see metrics related to your kubernetes cluster..
 ---Make sure to do cleanup 
 
 ```
+
 
 
 
