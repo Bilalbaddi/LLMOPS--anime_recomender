@@ -14,29 +14,35 @@ The **Anime Recommender System** is a production-grade **RAG (Retrieval-Augmente
 
 Instead of relying on generic knowledge, this project uses **LangChain** to orchestrate a RAG pipeline. It retrieves relevant anime data from a vector store, augments the prompt, and sends it to the **Groq LPU (Language Processing Unit)** for ultra-fast inference using open-source models hosted on **Hugging Face**. The entire stack is containerized and deployed on **Kubernetes**, monitored by **Grafana Cloud**.
 
-## 🏗️ Architecture (RAG Pipeline)
+## 🏗️ Architecture
 
-The application follows a microservices-inspired architecture where the RAG pipeline is embedded within the Streamlit container.
+The application follows a microservices-inspired architecture deployed on AWS EC2.
 
-```mermaid
-graph TD
-    User["User (Browser)"] -->|Natural Language Query| Streamlit["Streamlit UI"]
-    
-    subgraph "RAG Pipeline"
-        Streamlit -->|Query| Chain["LangChain Orchestrator"]
-        Chain -->|Search Context| Ret["Retriever"]
-        Ret -->|Retrieve Data| Vector["Vector Store"]
-        Vector -->|Augmented Context| Chain
-        Chain -->|Prompt + Context| LLM["Groq API (Llama3)"]
-    end
-    
-    subgraph "Infrastructure"
-        K8s["Kubernetes Cluster"] -->|Hosts| Pod["App Pod"]
-        Agent["Grafana Agent"] -->|Monitors| Pod
-    end
-
-    Chain -->|Final Answer| User
-    LLM -->|Inference| HuggingFace["Hugging Face Models"]
+```text
+USER (Browser)
+  │
+  │ [HTTP Request]
+  ▼
+AWS EC2 Instance (Port 8501)
+  │
+  │ [Port Forwarding]
+  ▼
+KUBERNETES CLUSTER (Minikube)
+  │
+  ├──► [Service: Load Balancer]
+  │      │
+  │      ▼
+  ├──► [Pod: Anime Recommender]
+  │      │
+  │      ├──► Container: Streamlit UI
+  │      │
+  │      └──► Internal: RAG Pipeline (LangChain)
+  │             ├──► Retriever (Vector Store)
+  │             └──► Inference (Groq API + HuggingFace)
+  │
+  └──► [Pod: Grafana Agent]
+         │
+         └──► Push Metrics ──► GRAFANA CLOUD
     
 
 LLMOPS--anime_recomender/
@@ -307,6 +313,7 @@ Now u can see metrics related to your kubernetes cluster..
 ---Make sure to do cleanup 
 
 ```
+
 
 
 
