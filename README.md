@@ -1,40 +1,44 @@
-# 🎬 LLMOPS Anime Recommender System
+# 🎬 LLMOPS Anime Recommender System (RAG)
 
 ![Python](https://img.shields.io/badge/Python-3.10-blue?style=for-the-badge&logo=python&logoColor=white)
+![LangChain](https://img.shields.io/badge/LangChain-Orchestration-1C3C3C?style=for-the-badge&logo=langchain&logoColor=white)
+![HuggingFace](https://img.shields.io/badge/HuggingFace-Models-FFD21E?style=for-the-badge&logo=huggingface&logoColor=black)
+![Groq](https://img.shields.io/badge/Groq-Fast_Inference-F55036?style=for-the-badge&logo=fastapi&logoColor=white)
 ![Docker](https://img.shields.io/badge/Docker-Container-2496ED?style=for-the-badge&logo=docker&logoColor=white)
 ![Kubernetes](https://img.shields.io/badge/Kubernetes-Orchestration-326CE5?style=for-the-badge&logo=kubernetes&logoColor=white)
-![Streamlit](https://img.shields.io/badge/Streamlit-Frontend-FF4B4B?style=for-the-badge&logo=streamlit&logoColor=white)
 ![Grafana](https://img.shields.io/badge/Grafana-Observability-F46800?style=for-the-badge&logo=grafana&logoColor=white)
-![AWS](https://img.shields.io/badge/AWS-EC2-232F3E?style=for-the-badge&logo=amazon-aws&logoColor=white)
 
 ## 📖 Overview
 
-The **Anime Recommender System** is an end-to-end LLMOps (Large Language Model Operations) project designed to provide personalized anime suggestions.
+The **Anime Recommender System** is a production-grade **RAG (Retrieval-Augmented Generation)** application designed to provide context-aware anime suggestions.
 
-Unlike simple filtering apps, this project leverages **LLMs (Groq/HuggingFace)** to understand natural language queries. It is designed with a production-first mindset, utilizing **Docker** for containerization, **Kubernetes (Minikube)** for orchestration, and **Grafana Cloud** for real-time observability and resource monitoring.
+Instead of relying on generic knowledge, this project uses **LangChain** to orchestrate a RAG pipeline. It retrieves relevant anime data from a vector store, augments the prompt, and sends it to the **Groq LPU (Language Processing Unit)** for ultra-fast inference using open-source models hosted on **Hugging Face**. The entire stack is containerized and deployed on **Kubernetes**, monitored by **Grafana Cloud**.
 
-## 🏗️ Architecture
+## 🏗️ Architecture (RAG Pipeline)
 
-The application follows a microservices-inspired architecture deployed on AWS EC2.
+The application follows a microservices-inspired architecture where the RAG pipeline is embedded within the Streamlit container.
 
+```mermaid
 graph TD
-    User["User (Browser)"] -->|HTTP Request| EC2["AWS EC2 Instance"]
-    EC2 -->|Port Forward :8501| Service
-
-    subgraph "Kubernetes Cluster"
-        Service["Service (Load Balancer)"] -->|Route Traffic| Pod[App Pod]
-        
-        subgraph "Anime Recommender Pod"
-            Container[Streamlit Container]
-        end
-        
-        subgraph "Observability Stack"
-            Agent[Grafana Agent] -->|Scrape Metrics| Container
-        end
+    User[User (Browser)] -->|Natural Language Query| Streamlit[Streamlit UI]
+    
+    subgraph "RAG Pipeline (LangChain)"
+        Streamlit -->|Query| Chain[LangChain Orchestrator]
+        Chain -->|Search Context| Ret[Retriever]
+        Ret -->|Retrieve Data| Vector[Vector Store]
+        Vector -->|Augmented Context| Chain
+        Chain -->|Prompt + Context| LLM[Groq API (Llama3/Mixtral)]
     end
     
-    Pod -->|API Call| LLM["External LLM API (Groq/HF)"]
-    Agent -->|Push Metrics| Grafana[Grafana Cloud Dashboard]
+    subgraph "Infrastructure"
+        K8s[Kubernetes Cluster] -->|Hosts| Pod[App Pod]
+        Agent[Grafana Agent] -->|Monitors| Pod
+    end
+
+    Chain -->|Final Answer| User
+    LLM -->|Inference| HuggingFace[Hugging Face Models]
+
+    
 
 LLMOPS--anime_recomender/
 ├── Dockerfile              # Instructions to build the container image
@@ -304,5 +308,6 @@ Now u can see metrics related to your kubernetes cluster..
 ---Make sure to do cleanup 
 
 ```
+
 
 
